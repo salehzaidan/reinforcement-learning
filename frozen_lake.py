@@ -1,7 +1,7 @@
 import gymnasium as gym
 import numpy as np
 
-from rl.dp import policy_iteration
+from rl.dp import value_iteration
 
 
 def visualize_policy(policy: np.ndarray, num_states: int):
@@ -23,7 +23,7 @@ for s in range(num_states):
             transition_prob[s, a, s_next] += p
             reward_fn[s, a, s_next] += r
 discount_factor = 0.99
-policy = policy_iteration(
+policy = value_iteration(
     num_states, num_actions, transition_prob, reward_fn, discount_factor
 )
 visualize_policy(policy, num_states)

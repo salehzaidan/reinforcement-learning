@@ -1,6 +1,6 @@
 import gymnasium as gym
 
-from rl.mc import monte_carlo_epsilon_soft
+from rl.mc import monte_carlo_off_policy
 
 
 def build_state_indices(observation_space):
@@ -44,7 +44,7 @@ discount_factor = 0.99
 env_train = gym.wrappers.TransformObservation(
     env, lambda s: state_indices[s], gym.spaces.Discrete(num_states)
 )
-policy = monte_carlo_epsilon_soft(env_train, num_states, num_actions, discount_factor)
+policy = monte_carlo_off_policy(env_train, num_states, num_actions, discount_factor)
 
 observation, info = env.reset()
 done = False

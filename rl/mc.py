@@ -74,3 +74,39 @@ def monte_carlo_epsilon_soft(
                     pi[s, a] = epsilon / num_actions
 
     return np.argmax(pi, axis=1)
+
+
+def monte_carlo_off_policy(
+    env: gym.Env,
+    num_states: int,
+    num_actions: int,
+    discount_factor: float,
+    max_episodes: int = 1_000,
+):
+    Q = np.zeros((num_states, num_actions))
+    C = np.zeros((num_states, num_actions))
+    pi = np.argmax(Q, axis=1)
+
+    for _ in range(max_episodes):
+        b = np.ones((num_states, num_actions)) / num_actions
+        episode = []
+        s, _ = env.reset()
+        done = False
+        while not done:
+            a = np.argmax(b[s, :])
+            s_next, r, terminated, truncated, _ = env.step(a)
+            episode.append((s, a, r))
+            s = s_next
+            done = terminated or truncated
+        G = 0.0
+        W = 1.0
+        for s, a, r in reversed(episode):
+            G = discount_factor * G + r
+            C[s, a] += W
+            Q[s, a] += W / C[s, a] * (G - Q[s, a])
+            pi[s] = np.argmax(Q[s, :])
+            if a != pi[s]:
+                break
+            W *= 1 / b
+
+    return pi

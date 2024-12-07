@@ -35,12 +35,12 @@ def print_step(action, observation, reward):
     print(s)
 
 
-env = gym.make("Blackjack-v1")
+env = gym.make("Blackjack-v1", sab=True)
 
 state_indices = build_state_indices(env.unwrapped.observation_space)
 num_states = len(state_indices)
 num_actions = env.unwrapped.action_space.n
-discount_factor = 0.99
+discount_factor = 1.0
 env_train = gym.wrappers.TransformObservation(
     env, lambda s: state_indices[s], gym.spaces.Discrete(num_states)
 )

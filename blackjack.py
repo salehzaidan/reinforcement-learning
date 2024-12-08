@@ -1,6 +1,7 @@
+import argparse
 import gymnasium as gym
 
-from rl.mc import monte_carlo_off_policy
+import rl.mc
 
 
 def build_state_indices(observation_space):
@@ -35,23 +36,44 @@ def print_step(action, observation, reward):
     print(s)
 
 
-env = gym.make("Blackjack-v1", sab=True)
+def get_command_line_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "-a", "--algo", choices=rl.mc.__all__, default="monte_carlo_on_policy"
+    )
+    return parser.parse_args()
 
-state_indices = build_state_indices(env.unwrapped.observation_space)
-num_states = len(state_indices)
-num_actions = env.unwrapped.action_space.n
-discount_factor = 1.0
-env_train = gym.wrappers.TransformObservation(
-    env, lambda s: state_indices[s], gym.spaces.Discrete(num_states)
-)
-policy = monte_carlo_off_policy(env_train, num_states, num_actions, discount_factor)
 
-observation, info = env.reset()
-done = False
-while not done:
-    action = policy[state_indices[observation]]
-    next_observation, reward, terminated, truncated, info = env.step(action)
-    print_step(action, observation, reward)
-    observation = next_observation
-    done = terminated or truncated
-env.close()
+def main():
+    args = get_command_line_args()
+    if args.algo == "monte_carlo_on_policy":
+        print("Using on-policy Monte Carlo")
+        algo = rl.mc.monte_carlo_on_policy
+    elif args.algo == "monte_carlo_off_policy":
+        print("Using off-policy Monte Carlo")
+        algo = rl.mc.monte_carlo_off_policy
+
+    env = gym.make("Blackjack-v1", sab=True)
+
+    state_indices = build_state_indices(env.unwrapped.observation_space)
+    num_states = len(state_indices)
+    num_actions = env.unwrapped.action_space.n
+    discount_factor = 1.0
+    env_train = gym.wrappers.TransformObservation(
+        env, lambda s: state_indices[s], gym.spaces.Discrete(num_states)
+    )
+    policy = algo(env_train, num_states, num_actions, discount_factor)
+
+    observation, info = env.reset()
+    done = False
+    while not done:
+        action = policy[state_indices[observation]]
+        next_observation, reward, terminated, truncated, info = env.step(action)
+        print_step(action, observation, reward)
+        observation = next_observation
+        done = terminated or truncated
+    env.close()
+
+
+if __name__ == "__main__":
+    main()

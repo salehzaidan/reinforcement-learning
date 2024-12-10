@@ -1,12 +1,12 @@
 import gymnasium as gym
 
-from rl.td import sarsa
+from rl.td import q_learning
 
 env = gym.make("CliffWalking-v0")
 num_states = env.unwrapped.observation_space.n
 num_actions = env.unwrapped.action_space.n
 discount_factor = 0.99
-policy = sarsa(env, num_states, num_actions, discount_factor)
+policy = q_learning(env, num_states, num_actions, discount_factor)
 
 env.unwrapped.render_mode = "human"
 observation, info = env.reset()

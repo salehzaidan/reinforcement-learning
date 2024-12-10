@@ -1,6 +1,8 @@
 import gymnasium as gym
 import numpy as np
 
+__all__ = ["sarsa", "q_learning", "expected_sarsa"]
+
 
 def sarsa(
     env: gym.Env,

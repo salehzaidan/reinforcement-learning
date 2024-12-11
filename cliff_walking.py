@@ -26,6 +26,9 @@ def main():
     elif args.algo == "expected_sarsa":
         print("Using Expected Sarsa")
         algo = rl.td.expected_sarsa
+    elif args.algo == "double_q_learning":
+        print("Using Double Q-Learning")
+        algo = rl.td.double_q_learning
 
     env = gym.make("CliffWalking-v0")
     num_states = env.unwrapped.observation_space.n

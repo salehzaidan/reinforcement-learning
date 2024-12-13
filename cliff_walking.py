@@ -29,6 +29,9 @@ def main():
     elif args.algo == "double_q_learning":
         print("Using Double Q-Learning")
         algo = rl.td.double_q_learning
+    elif args.algo == "n_step_sarsa":
+        print("Using n-step Sarsa")
+        algo = rl.td.n_step_sarsa
 
     env = gym.make("CliffWalking-v0")
     num_states = env.unwrapped.observation_space.n
